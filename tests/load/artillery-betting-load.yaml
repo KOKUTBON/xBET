@@ -1,0 +1,38 @@
+config:
+  target: "http://localhost:8080"
+  phases:
+    - duration: 60
+      arrivalRate: 50
+      rampTo: 500
+      name: "Warm-up phase"
+    - duration: 120
+      arrivalRate: 2000
+      name: "Peak Betting Surge (2000 RPS)"
+  defaults:
+    headers:
+      Content-Type: "application/json"
+
+scenarios:
+  - name: "Place In-Play Bets & Check Balance"
+    flow:
+      - post:
+          url: "/api/v1/betting/bets"
+          json:
+            userId: "usr-artillery-{{ $randomNumber(1, 5000) }}"
+            betType: "SINGLE"
+            stake: 25.00
+            currencyCode: "USD"
+            legs:
+              - fixtureId: "fix-live-990"
+                fixtureName: "Real Madrid vs Barcelona"
+                marketId: "mkt-1x2"
+                marketName: "Match Winner"
+                selectionId: "sel-home"
+                selectionName: "Real Madrid"
+                submittedOdds: 2.10
+          capture:
+            - json: "$.ticket.id"
+              as: "ticketId"
+      - get:
+          url: "/api/v1/betting/bets/{{ ticketId }}/cashout-offer"
+      - think: 1

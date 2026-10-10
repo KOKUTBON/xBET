@@ -1,0 +1,256 @@
+name: CI/CD Pipeline - Modern xBET Platform
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # 1. Monorepo Microservices Test Matrix
+  # ============================================================================
+  test-monorepo:
+    name: Test Microservices (${{ matrix.service }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - packages/core-types
+          - packages/database
+          - packages/legacy-bridge
+          - packages/compliance
+          - packages/observability
+          - services/betting-engine
+          - services/casino-engine
+          - services/odds-engine
+          - apps/web
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Run Service Test Suite
+        run: npm --prefix ${{ matrix.service }} test
+
+  # ============================================================================
+  # 2. Phase 0 Durable Acceptance (PostgreSQL Service Container)
+  # ============================================================================
+  test-postgres-durable-acceptance:
+    name: Durable Acceptance (PostgreSQL Service Container)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: xbet_test
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: xbet_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Apply points migrations
+        env:
+          DATABASE_URL: postgresql://xbet_test:test_password@localhost:5432/xbet_test
+        run: npm run db:migrate:points
+
+      - name: Run PostgreSQL acceptance and restricted pilot gates
+        env:
+          XBET_PG_TEST_URL: postgresql://xbet_test:test_password@localhost:5432/xbet_test
+        run: |
+          npm --prefix services/betting-engine run test:db
+          npm run test:pilot
+          npm run typecheck:pilot
+
+  # ============================================================================
+  # 3. Legacy Migration ETL Verification
+  # ============================================================================
+  test-migration-etl:
+    name: Legacy Migration Pipeline Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate Streaming MySQL ETL & Balance Audits
+        run: python3 db/scripts/migrate_legacy_mysql.py --limit 100
+
+  # ============================================================================
+  # 4. Docker Image Build & Security Scan
+  # ============================================================================
+  build-docker-images:
+    name: Build Multi-Stage Docker Images
+    needs: [test-monorepo, test-migration-etl, test-postgres-durable-acceptance]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component:
+          - { name: odds-engine, path: services/odds-engine }
+          - { name: betting-engine, path: services/betting-engine }
+          - { name: casino-engine, path: services/casino-engine }
+          - { name: legacy-bridge, path: packages/legacy-bridge }
+          - { name: web-frontend, path: apps/web }
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Build Docker Image (${{ matrix.component.name }})
+        uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
+        with:
+          context: .
+          file: ${{ matrix.component.path }}/Dockerfile
+          push: false
+          tags: xbet/${{ matrix.component.name }}:latest
+
+  # ============================================================================
+  # 4. Kubernetes Helm Chart Lint & Manifest Validation
+  # ============================================================================
+  validate-k8s-helm:
+    name: Validate Kubernetes & Helm Manifests
+    needs: [test-monorepo]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+
+      - name: Run K8s Manifests Validation Suite
+        run: node --experimental-strip-types k8s/test/k8s_manifest_validation.test.ts
+
+  # ============================================================================
+  # 5. Full Platform Integration & Pre-Flight Verification
+  # ============================================================================
+  test-integration:
+    name: Integration & Pre-Flight Verification
+    needs: [test-monorepo]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Run Integration & Verification Test Suite
+        run: |
+          node --experimental-strip-types tests/chaos/chaos-engine.test.ts
+          node --experimental-strip-types tests/cutover/cutover-validation.test.ts
+          node --experimental-strip-types tests/e2e/user-journey-lifecycle.test.ts
+          npm run test:football-v2
+          npm run test:mobile-promos
+          node --experimental-strip-types tests/realtime/realtime-engines-validation.test.ts
+          node --experimental-strip-types scripts/verify-production-readiness.ts
+          node --experimental-strip-types gateway/test/gateway_validation.test.ts
+
+  # ============================================================================
+  # 6. Workspace Build & Frontend Bundle Consistency
+  # ============================================================================
+  build-workspaces:
+    name: Build Workspaces
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Build all workspaces
+        run: npm run build
+
+      - name: Build frontend bundle
+        run: npm run build:web
+
+      - name: Verify static Pages demo without publishing
+        run: |
+          npm run test:demo
+          npm run build:pages
+
+  # ============================================================================
+  # 7. Secret & Dependency Scanning
+  # ============================================================================
+  security-scan:
+    name: Secret & Dependency Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan repository for secrets (Gitleaks)
+        env:
+          GITLEAKS_VERSION: 8.30.1
+        run: |
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            | tar -xz -C "$RUNNER_TEMP" gitleaks
+          "$RUNNER_TEMP/gitleaks" dir . --redact --no-banner --exit-code 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install workspace dependencies
+        run: npm ci
+
+      - name: Audit dependencies
+        run: npm audit --audit-level=critical

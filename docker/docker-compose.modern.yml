@@ -1,0 +1,182 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # 1. Core Data Stores & Caching
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: xbet-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: xbet_platform
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres_dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-modern-data:/var/lib/postgresql/data
+      - ../db/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/01_initial_schema.sql:ro
+      - ../db/seeds/001_seed_initial_data.sql:/docker-entrypoint-initdb.d/03_seed_initial_data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d xbet_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - xbet-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: xbet-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-modern-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - xbet-network
+
+  adminer:
+    image: adminer:latest
+    container_name: xbet-adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - xbet-network
+
+  # ============================================================================
+  # 2. Modern TypeScript Microservices
+  # ============================================================================
+  odds-engine:
+    build:
+      context: ../services/odds-engine
+      dockerfile: Dockerfile
+    container_name: xbet-odds-engine
+    restart: unless-stopped
+    environment:
+      PORT: 4000
+      HOST: 0.0.0.0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DATABASE_URL: postgresql://postgres:postgres_dev_password@postgres:5432/xbet_platform
+    ports:
+      - "4000:4000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - xbet-network
+
+  betting-engine:
+    build:
+      context: ../services/betting-engine
+      dockerfile: Dockerfile
+    container_name: xbet-betting-engine
+    restart: unless-stopped
+    environment:
+      PORT: 4001
+      HOST: 0.0.0.0
+      DATABASE_URL: postgresql://postgres:postgres_dev_password@postgres:5432/xbet_platform
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "4001:4001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - xbet-network
+
+  casino-engine:
+    build:
+      context: ../services/casino-engine
+      dockerfile: Dockerfile
+    container_name: xbet-casino-engine
+    restart: unless-stopped
+    environment:
+      PORT: 4002
+      HOST: 0.0.0.0
+      DATABASE_URL: postgresql://postgres:postgres_dev_password@postgres:5432/xbet_platform
+    ports:
+      - "4002:4002"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - xbet-network
+
+  legacy-bridge:
+    build:
+      context: ../packages/legacy-bridge
+      dockerfile: Dockerfile
+    container_name: xbet-legacy-bridge
+    restart: unless-stopped
+    environment:
+      PORT: 4003
+      HOST: 0.0.0.0
+      DATABASE_URL: postgresql://postgres:postgres_dev_password@postgres:5432/xbet_platform
+      JWT_SECRET: xbet_production_secret_key_change_me
+    ports:
+      - "4003:4003"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - xbet-network
+
+  web-frontend:
+    build:
+      context: ../apps/web
+      dockerfile: Dockerfile
+    container_name: xbet-web-frontend
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      HOST: 0.0.0.0
+    ports:
+      - "3000:3000"
+    networks:
+      - xbet-network
+
+  # ============================================================================
+  # 3. Unified API Gateway & Reverse Proxy
+  # ============================================================================
+  api-gateway:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: xbet-api-gateway
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - odds-engine
+      - betting-engine
+      - casino-engine
+      - legacy-bridge
+      - web-frontend
+    networks:
+      - xbet-network
+
+networks:
+  xbet-network:
+    driver: bridge
+
+volumes:
+  postgres-modern-data:
+  redis-modern-data:

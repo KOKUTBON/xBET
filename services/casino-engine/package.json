@@ -1,0 +1,17 @@
+{
+  "name": "@xbet/casino-engine",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "High-performance Casino Remote Game Server (RGS) and Virtual Sports Engine",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node --check --experimental-strip-types src/index.ts",
+    "start": "node --experimental-strip-types src/index.ts",
+    "dev": "node --experimental-strip-types src/index.ts",
+    "test": "node --experimental-strip-types test/casino_virtual.test.ts && node --experimental-strip-types test/all_16_games.test.ts && node --experimental-strip-types test/poker_texas_holdem.test.ts && node --experimental-strip-types test/route_auth.test.ts && node --experimental-strip-types test/durable_roulette_rng.test.ts && node --experimental-strip-types test/virtual_racing_deterministic.test.ts && node --experimental-strip-types test/nist_sp800_22_rng_conformance.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}

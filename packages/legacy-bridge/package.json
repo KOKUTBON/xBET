@@ -1,0 +1,16 @@
+{
+  "name": "@xbet/legacy-bridge",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Legacy 1:1 CakePHP 2.x URL Router, Multi-Language Locale, and AJAX Navigation Tree Bridge",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node --check --experimental-strip-types src/index.ts && node --check --experimental-strip-types src/server.ts",
+    "start": "node --experimental-strip-types src/server.ts",
+    "test": "node --experimental-strip-types test/legacy_routing.test.ts && node --experimental-strip-types test/tickets.test.ts && node --experimental-strip-types test/reservation_tickets.test.ts && node --experimental-strip-types test/users_roles.test.ts && node --experimental-strip-types test/payments_bonus.test.ts && node --experimental-strip-types test/payments_webhooks.test.ts && node --experimental-strip-types test/dashboard_views.test.ts && node --experimental-strip-types test/reporting.test.ts && node --experimental-strip-types test/notifications.test.ts && node --experimental-strip-types test/affiliates.test.ts && node --experimental-strip-types test/cms.test.ts && node --experimental-strip-types test/risk_management.test.ts && node --experimental-strip-types test/rbac_audit.test.ts && node --experimental-strip-types test/cron_scheduler.test.ts && node --experimental-strip-types test/support_desk.test.ts && node --experimental-strip-types test/server_endpoints.test.ts && node --experimental-strip-types test/stripe_crypto_webhooks.test.ts && node --experimental-strip-types test/settings_combi_boost_cancellation.test.ts && node --experimental-strip-types test/responsible_gaming.test.ts && node --experimental-strip-types test/cms_news_slides_menus.test.ts && node --experimental-strip-types test/live_casino_perfectmoney_wecashup.test.ts && node --experimental-strip-types test/maintenance_commission.test.ts && node --experimental-strip-types test/migration_and_auth_upgrade.test.ts && node --experimental-strip-types test/sandbox_payments.test.ts && node --experimental-strip-types test/withdrawals_workflow.test.ts && node --experimental-strip-types test/sms_and_queue_notifications.test.ts && node --experimental-strip-types test/full_cake_layers_conversion.test.ts && node --experimental-strip-types test/full_cake_helpers_events_lib_config.test.ts && node --experimental-strip-types test/network_feeds_gateways_poker_support.test.ts && node --experimental-strip-types test/user_settings_soap_market_elements.test.ts && node --experimental-strip-types test/margin_percentage_manager.test.ts && node --experimental-strip-types test/staffs_risks_mails_currency_bonus.test.ts && node --experimental-strip-types test/i18n_14_languages_rtl.test.ts && node --experimental-strip-types test/esc_pos_receipt_printer.test.ts && node --experimental-strip-types test/html_odds_scraper.test.ts && node --experimental-strip-types test/legacy_gateways_novinpal_egopay_etranzact_lunawallet.test.ts && node --experimental-strip-types test/redis_manager.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}

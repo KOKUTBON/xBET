@@ -1,0 +1,22 @@
+{
+  "name": "@xbet/odds-engine",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "High-performance real-time odds calculation and WebSocket streaming engine",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node --check --experimental-strip-types src/index.ts",
+    "start": "node --experimental-strip-types src/index.ts",
+    "dev": "node --experimental-strip-types src/index.ts",
+    "test": "node --experimental-strip-types verify_in_process.ts && node --experimental-strip-types test/feed_ingestion.test.ts && node --experimental-strip-types test/load_concurrency.test.ts && node --experimental-strip-types test/canonical_feed_log.test.ts && node --experimental-strip-types test/bivariate_pricing_model.test.ts && node --experimental-strip-types test/bet_builder_copula.test.ts"
+  },
+  "dependencies": {
+    "ws": "^8.16.0",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.4.0"
+  }
+}

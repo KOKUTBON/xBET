@@ -1,0 +1,65 @@
+# ==============================================================================
+# Horizontal Pod Autoscalers (HPA) for High-Volume Services
+# ==============================================================================
+{{- if .Values.oddsEngine.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: odds-engine-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: odds-engine
+  minReplicas: {{ .Values.oddsEngine.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.oddsEngine.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.oddsEngine.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}
+---
+{{- if .Values.bettingEngine.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: betting-engine-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: betting-engine
+  minReplicas: {{ .Values.bettingEngine.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.bettingEngine.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.bettingEngine.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}
+---
+{{- if .Values.webFrontend.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: web-frontend-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web-frontend
+  minReplicas: {{ .Values.webFrontend.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.webFrontend.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.webFrontend.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}

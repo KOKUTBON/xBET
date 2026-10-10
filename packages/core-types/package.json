@@ -1,0 +1,15 @@
+{
+  "name": "@xbet/core-types",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Shared core TypeScript domain types, auth middleware, and enums for xBET modern architecture",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "node --check --experimental-strip-types src/index.ts",
+    "test": "node --experimental-strip-types test/auth_middleware.test.ts && node --experimental-strip-types test/openapi_docs.test.ts && node --experimental-strip-types test/pilot_hardening.test.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

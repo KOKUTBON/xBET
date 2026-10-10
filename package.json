@@ -1,0 +1,80 @@
+{
+  "name": "xbet-platform",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "description": "Next-Generation High-Performance Sportsbook, Casino, and Gaming Platform",
+  "workspaces": [
+    "packages/*",
+    "services/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test:all",
+    "test:all": "(cd packages/core-types && npm test) && (cd packages/database && npm test) && (cd packages/legacy-bridge && npm test) && (cd packages/observability && npm test) && (cd packages/compliance && npm test) && (cd services/betting-engine && npm test) && (cd services/odds-engine && npm test) && (cd services/casino-engine && npm test) && (cd apps/web && npm test) && node --experimental-strip-types tests/chaos/chaos-engine.test.ts && node --experimental-strip-types tests/cutover/cutover-validation.test.ts && node --experimental-strip-types tests/e2e/user-journey-lifecycle.test.ts && node --experimental-strip-types tests/realtime/realtime-engines-validation.test.ts && node --experimental-strip-types tests/e2e/football_v2_vertical_slice.test.ts && node --experimental-strip-types tests/e2e/mobile_and_live_tracker_promotions.test.ts && node --experimental-strip-types scripts/verify-production-readiness.ts && node --experimental-strip-types gateway/test/gateway_validation.test.ts && node --experimental-strip-types k8s/test/k8s_manifest_validation.test.ts",
+    "test:mobile-promos": "node --experimental-strip-types tests/e2e/mobile_and_live_tracker_promotions.test.ts",
+    "test:football-v2": "node --experimental-strip-types tests/e2e/football_v2_vertical_slice.test.ts",
+    "test:realtime": "node --experimental-strip-types tests/realtime/realtime-engines-validation.test.ts",
+    "test:types": "node --experimental-strip-types packages/core-types/test/auth_middleware.test.ts",
+    "test:bridge": "cd packages/legacy-bridge && npm test",
+    "test:observability": "cd packages/observability && npm test",
+    "test:compliance": "cd packages/compliance && npm test",
+    "test:betting": "cd services/betting-engine && npm test",
+    "test:odds": "cd services/odds-engine && npm test",
+    "test:casino": "cd services/casino-engine && npm test",
+    "test:web": "cd apps/web && npm test",
+    "test:e2e": "node --experimental-strip-types tests/e2e/user-journey-lifecycle.test.ts",
+    "test:chaos": "node --experimental-strip-types tests/chaos/chaos-engine.test.ts",
+    "test:load": "node --experimental-strip-types services/odds-engine/test/load_concurrency.test.ts",
+    "test:cutover": "node --experimental-strip-types tests/cutover/cutover-validation.test.ts",
+    "test:gateway": "node --experimental-strip-types gateway/test/gateway_validation.test.ts",
+    "test:k8s": "node --experimental-strip-types k8s/test/k8s_manifest_validation.test.ts",
+    "test:etl": "python3 db/scripts/migrate_legacy_mysql.py --limit 10",
+    "verify:prod": "node --experimental-strip-types scripts/verify-production-readiness.ts",
+    "build": "npm run build --workspaces --if-present",
+    "build:web": "node scripts/bundle-frontend.ts",
+    "db:generate": "npx --yes prisma generate --schema=packages/database/prisma/schema.prisma",
+    "db:migrate": "npx --yes prisma migrate deploy --schema=packages/database/prisma/schema.prisma",
+    "db:push": "npx --yes prisma db push --schema=packages/database/prisma/schema.prisma",
+    "start": "node --env-file-if-exists=.env --experimental-strip-types scripts/start-all-services.ts",
+    "dev": "node --env-file-if-exists=.env --experimental-strip-types scripts/start-all-services.ts",
+    "start:odds": "node --experimental-strip-types services/odds-engine/src/index.ts",
+    "start:betting": "node --experimental-strip-types services/betting-engine/src/index.ts",
+    "start:casino": "node --experimental-strip-types services/casino-engine/src/index.ts",
+    "start:bridge": "node --experimental-strip-types packages/legacy-bridge/src/server.ts",
+    "start:web": "node --experimental-strip-types apps/web/server.ts",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "db:migrate:points": "node --env-file-if-exists=.env --experimental-strip-types scripts/migrate-points.ts",
+    "test:pilot": "node --experimental-strip-types tests/e2e/points-pilot.test.ts && node --experimental-strip-types tests/e2e/points-pilot-process-restart.test.ts",
+    "typecheck:pilot": "tsc --noEmit --target ES2022 --module NodeNext --moduleResolution NodeNext --strict --esModuleInterop --skipLibCheck --allowImportingTsExtensions services/betting-engine/src/pilot/pilot-store.ts services/casino-engine/src/durable/pilot-roulette.ts",
+    "build:pages": "node scripts/build-pages.ts",
+    "preview:pages": "node scripts/preview-pages.ts",
+    "test:demo": "node --experimental-strip-types apps/web/test_demo.ts"
+  },
+  "keywords": [
+    "sportsbook",
+    "casino",
+    "microservices",
+    "real-time",
+    "double-entry",
+    "pwa",
+    "fintech"
+  ],
+  "author": "Rei Doda",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KOKUTBON/xBET.git"
+  },
+  "dependencies": {
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "deepmerge-ts": "^8.0.0"
+  }
+}

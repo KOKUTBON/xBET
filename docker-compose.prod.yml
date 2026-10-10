@@ -1,0 +1,231 @@
+services:
+  # ==========================================================================
+  # High-Performance PostgreSQL 16 Database
+  # ==========================================================================
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: xbet_production
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+      - ./db/postgres-tuning.conf:/etc/postgresql/postgresql.conf:ro
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 16G
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # ==========================================================================
+  # PgBouncer Connection Pooler (10,000 Client Concurrency)
+  # ==========================================================================
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    restart: always
+    environment:
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_NAME: xbet_production
+      POOL_MODE: transaction
+      MAX_CLIENT_CONN: "10000"
+      DEFAULT_POOL_SIZE: "100"
+    ports:
+      - "6432:6432"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ==========================================================================
+  # Redis 7 In-Memory Caching & Real-Time Pub/Sub
+  # ==========================================================================
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "4gb", "--maxmemory-policy", "volatile-lru"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata_prod:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ==========================================================================
+  # Microservices
+  # ==========================================================================
+  migrations:
+    build:
+      context: .
+      dockerfile: services/betting-engine/Dockerfile
+    working_dir: /app
+    command: ["node", "--experimental-strip-types", "scripts/migrate-points.ts"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  odds-engine:
+    build:
+      context: .
+      dockerfile: services/odds-engine/Dockerfile
+    restart: always
+    environment:
+      XBET_PILOT_MODE: "true"
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      RNG_SEED_KEY: ${RNG_SEED_KEY:?Set RNG_SEED_KEY}
+      ENABLE_SIMULATOR: ${ENABLE_SIMULATOR:-false}
+      PORT: "4000"
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  betting-engine:
+    build:
+      context: .
+      dockerfile: services/betting-engine/Dockerfile
+    restart: always
+    environment:
+      XBET_PILOT_MODE: "true"
+      # Backends are reachable only through the gateway/web proxy, which set X-Real-IP.
+      XBET_TRUST_PROXY: "true"
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      RNG_SEED_KEY: ${RNG_SEED_KEY:?Set RNG_SEED_KEY}
+      ADMIN_BOOTSTRAP_USERNAME: ${ADMIN_BOOTSTRAP_USERNAME:-admin}
+      ADMIN_BOOTSTRAP_PASSWORD: ${ADMIN_BOOTSTRAP_PASSWORD:-}
+      PORT: "4001"
+      NODE_ENV: production
+      ODDS_ENGINE_URL: http://odds-engine:4000
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  casino-engine:
+    build:
+      context: .
+      dockerfile: services/casino-engine/Dockerfile
+    restart: always
+    environment:
+      XBET_PILOT_MODE: "true"
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      RNG_SEED_KEY: ${RNG_SEED_KEY:?Set RNG_SEED_KEY}
+      PORT: "4002"
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      BETTING_ENGINE_URL: http://betting-engine:4001
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+      betting-engine:
+        condition: service_started
+
+  legacy-bridge:
+    build:
+      context: .
+      dockerfile: packages/legacy-bridge/Dockerfile
+    restart: always
+    environment:
+      XBET_PILOT_MODE: "true"
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      RNG_SEED_KEY: ${RNG_SEED_KEY:?Set RNG_SEED_KEY}
+      PORT: "4003"
+      NODE_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+
+  web-frontend:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: always
+    environment:
+      XBET_PILOT_MODE: "true"
+      # Backends are reachable only through the gateway/web proxy, which set X-Real-IP.
+      XBET_TRUST_PROXY: "true"
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      RNG_SEED_KEY: ${RNG_SEED_KEY:?Set RNG_SEED_KEY}
+      PORT: "4004"
+      NODE_ENV: production
+      ODDS_ENGINE_URL: http://odds-engine:4000
+      BETTING_ENGINE_URL: http://betting-engine:4001
+      CASINO_ENGINE_URL: http://casino-engine:4002
+      LEGACY_BRIDGE_URL: http://legacy-bridge:4003
+    depends_on:
+      - odds-engine
+      - betting-engine
+      - casino-engine
+      - legacy-bridge
+
+  # ==========================================================================
+  # Monitoring & Observability
+  # ==========================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - ./packages/observability/alerts/prometheus-alerts.yaml:/etc/prometheus/alerts.yaml:ro
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - ./packages/observability/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+
+  # ==========================================================================
+  # Unified Production API Gateway (NGINX)
+  # ==========================================================================
+  api-gateway:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - odds-engine
+      - betting-engine
+      - casino-engine
+      - legacy-bridge
+      - web-frontend
+
+volumes:
+  pgdata_prod:
+  redisdata_prod:
+
+secrets:
+  db_password:
+    file: ${DB_PASSWORD_FILE:?Set DB_PASSWORD_FILE}

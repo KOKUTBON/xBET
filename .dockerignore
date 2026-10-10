@@ -1,0 +1,12 @@
+.git
+node_modules
+.env
+.env.*
+!.env.example
+*.sql.gz
+*.sql.tar.gz
+xbetbase*.sql
+app/tmp
+/tmp
+/logs
+.DS_Store

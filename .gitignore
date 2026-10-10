@@ -1,0 +1,96 @@
+# Environment & local configuration
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Secrets & credentials
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.jks
+*.keystore
+*.mobileprovision
+credentials/
+secrets/
+tokens/
+private/
+*service-account*.json
+*credentials*.json
+
+# Dependencies & package caches
+node_modules/
+.npm/
+
+# Build outputs & caches
+dist/
+build/
+target/
+bin/
+obj/
+coverage/
+.cache/
+cache/
+*.tsbuildinfo
+apps/web/public/app.bundle.js
+
+# Python caches (ETL utilities)
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Generated / local runtime data
+uploads/
+artifacts/
+outputs/
+reports/
+backups/
+dumps/
+/data/
+/tmp/
+/logs/
+*.log
+*.tmp
+*.bak
+*.orig
+
+# Database files & local dumps (never commit real data)
+*.sql.gz
+*.sql.tar.gz
+*.sql.bak
+*.dump
+/xbetbase*.sql
+/db/legacy_migrated.sql
+/db/migrations/full_production_seed.sql
+/migrated_pg16_dump.sql
+*.sqlite
+*.sqlite3
+*.db
+
+# IDE & operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# macOS duplicated-file artifacts (e.g. "file 2.ts", "README 3.md")
+* [0-9].*
+*\ [0-9]
+
+# Scratch / temporary development work
+/scratch/
+
+# AI development assistant metadata
+.claude/
+.codex/
+.cursor/
+.windsurf/
+.github/agents/
+AI_CONTEXT.md
+
+# Local browser verification artifacts
+.playwright-cli/

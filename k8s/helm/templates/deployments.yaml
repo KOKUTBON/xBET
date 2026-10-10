@@ -1,0 +1,231 @@
+# ==============================================================================
+# 1. Odds Engine Deployment
+# ==============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: odds-engine
+  labels:
+    app.kubernetes.io/name: odds-engine
+    app.kubernetes.io/part-of: xbet-platform
+spec:
+  replicas: {{ .Values.oddsEngine.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: odds-engine
+  template:
+    metadata:
+      labels:
+        app: odds-engine
+    spec:
+      containers:
+        - name: odds-engine
+          image: "{{ .Values.image.registry }}/{{ .Values.oddsEngine.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.oddsEngine.port }}
+              name: http-ws
+          env:
+            - name: PORT
+              value: "{{ .Values.oddsEngine.port }}"
+            - name: DATABASE_URL
+              value: "postgresql://{{ .Values.postgres.user }}:$(POSTGRES_PASSWORD)@{{ .Values.postgres.host }}:{{ .Values.postgres.port }}/{{ .Values.postgres.database }}"
+            - name: REDIS_HOST
+              value: "{{ .Values.redis.host }}"
+            - name: REDIS_PORT
+              value: "{{ .Values.redis.port }}"
+          resources:
+            {{- toYaml .Values.oddsEngine.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: {{ .Values.oddsEngine.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: {{ .Values.oddsEngine.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+# ==============================================================================
+# 2. Betting Engine Deployment
+# ==============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: betting-engine
+  labels:
+    app.kubernetes.io/name: betting-engine
+    app.kubernetes.io/part-of: xbet-platform
+spec:
+  replicas: {{ .Values.bettingEngine.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: betting-engine
+  template:
+    metadata:
+      labels:
+        app: betting-engine
+    spec:
+      containers:
+        - name: betting-engine
+          image: "{{ .Values.image.registry }}/{{ .Values.bettingEngine.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.bettingEngine.port }}
+              name: http
+          env:
+            - name: PORT
+              value: "{{ .Values.bettingEngine.port }}"
+            - name: ODDS_ENGINE_URL
+              value: "http://odds-engine-svc:{{ .Values.oddsEngine.port }}"
+            - name: DATABASE_URL
+              value: "postgresql://{{ .Values.postgres.user }}:$(POSTGRES_PASSWORD)@{{ .Values.postgres.host }}:{{ .Values.postgres.port }}/{{ .Values.postgres.database }}"
+            - name: REDIS_HOST
+              value: "{{ .Values.redis.host }}"
+          resources:
+            {{- toYaml .Values.bettingEngine.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: {{ .Values.bettingEngine.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: {{ .Values.bettingEngine.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+# ==============================================================================
+# 3. Casino Engine Deployment
+# ==============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: casino-engine
+  labels:
+    app.kubernetes.io/name: casino-engine
+    app.kubernetes.io/part-of: xbet-platform
+spec:
+  replicas: {{ .Values.casinoEngine.replicas }}
+  selector:
+    matchLabels:
+      app: casino-engine
+  template:
+    metadata:
+      labels:
+        app: casino-engine
+    spec:
+      containers:
+        - name: casino-engine
+          image: "{{ .Values.image.registry }}/{{ .Values.casinoEngine.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.casinoEngine.port }}
+          resources:
+            {{- toYaml .Values.casinoEngine.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: {{ .Values.casinoEngine.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: {{ .Values.casinoEngine.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+# ==============================================================================
+# 4. Legacy Bridge & Backoffice Deployment
+# ==============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy-bridge
+  labels:
+    app.kubernetes.io/name: legacy-bridge
+    app.kubernetes.io/part-of: xbet-platform
+spec:
+  replicas: {{ .Values.legacyBridge.replicas }}
+  selector:
+    matchLabels:
+      app: legacy-bridge
+  template:
+    metadata:
+      labels:
+        app: legacy-bridge
+    spec:
+      containers:
+        - name: legacy-bridge
+          image: "{{ .Values.image.registry }}/{{ .Values.legacyBridge.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.legacyBridge.port }}
+          resources:
+            {{- toYaml .Values.legacyBridge.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: {{ .Values.legacyBridge.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: {{ .Values.legacyBridge.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+---
+# ==============================================================================
+# 5. Web Frontend Deployment
+# ==============================================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-frontend
+  labels:
+    app.kubernetes.io/name: web-frontend
+    app.kubernetes.io/part-of: xbet-platform
+spec:
+  replicas: {{ .Values.webFrontend.replicas }}
+  selector:
+    matchLabels:
+      app: web-frontend
+  template:
+    metadata:
+      labels:
+        app: web-frontend
+    spec:
+      containers:
+        - name: web-frontend
+          image: "{{ .Values.image.registry }}/{{ .Values.webFrontend.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.webFrontend.port }}
+          resources:
+            {{- toYaml .Values.webFrontend.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.webFrontend.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.webFrontend.port }}
+            initialDelaySeconds: 3
+            periodSeconds: 5

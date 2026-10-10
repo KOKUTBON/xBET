@@ -1,0 +1,51 @@
+name: Bug Report
+description: Create a report to help us improve the platform
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report an issue!
+        If you have discovered a security vulnerability, please do NOT file a public issue.
+        Refer to our [Security Policy](https://github.com/KOKUTBON/xBET/blob/main/SECURITY.md) for private reporting.
+  - type: input
+    id: component
+    attributes:
+      label: Affected Component
+      description: Which service or package is affected? (e.g., odds-engine, betting-engine, casino-engine, apps/web)
+      placeholder: "e.g., services/betting-engine"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: |
+        1. Start services with 'npm run dev'
+        2. Send request to ...
+        3. Observe error ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Node.js version, OS, browser (if frontend), Docker / K8s versions.
+      placeholder: "Node.js 24 LTS, macOS / Ubuntu 24.04"
+    validations:
+      required: false

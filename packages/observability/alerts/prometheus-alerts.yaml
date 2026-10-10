@@ -1,0 +1,42 @@
+groups:
+  - name: xbet_platform_alerts
+    rules:
+      - alert: DoubleEntryLedgerLeakage
+        expr: abs(sum(xbet_ledger_total_debits_usd) - sum(xbet_ledger_total_credits_usd)) > 0.0001
+        for: 10s
+        labels:
+          severity: critical
+          team: fintech
+        annotations:
+          summary: "Double-entry ledger mathematical conservation violated"
+          description: "Debits and Credits differ by {{ $value }} USD. Immediate halt & audit required."
+
+      - alert: HighMarketLiabilitySpike
+        expr: sum(xbet_market_liability_usd) by (fixture_id) > 100000
+        for: 30s
+        labels:
+          severity: warning
+          team: trading-risk
+        annotations:
+          summary: "High market exposure exceeded limit on fixture {{ $labels.fixture_id }}"
+          description: "Liability reached {{ $value }} USD on active market."
+
+      - alert: OddsFeedIngestionLag
+        expr: rate(xbet_odds_update_throughput_total[2m]) == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "EnetPulse / OddService feed ticks stopped"
+          description: "Zero odds updates ingested in the last 2 minutes for provider {{ $labels.provider }}."
+
+      - alert: HighHttpErrorRate
+        expr: sum(rate(xbet_http_requests_total{status=~"5.."}[1m])) / sum(rate(xbet_http_requests_total[1m])) > 0.05
+        for: 1m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "High 5xx error rate on {{ $labels.service }}"
+          description: "5xx error rate is above 5% on {{ $labels.service }}."

@@ -1,0 +1,72 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": 103,
+  "title": "xBET - Double-Entry Financial Ledger Conservation & Audit",
+  "tags": ["xbet", "fintech", "ledger", "audit", "compliance"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Ledger Mathematical Zero Conservation Invariant",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "abs(sum(xbet_ledger_total_debits_usd) - sum(xbet_ledger_total_credits_usd))",
+          "legendFormat": "Net Discrepancy ($)"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            { "color": "green", "value": 0 },
+            { "color": "red", "value": 0.0001 }
+          ]
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Gross Gaming Revenue (GGR) Trend",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(xbet_house_margin_revenue_usd[1h]))",
+          "legendFormat": "GGR ($/hr)"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Escrow Balance Locked (Active Tickets)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(xbet_escrow_locked_balance_usd)",
+          "legendFormat": "Locked Escrow"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Ledger Transaction Processing Latency (ms)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(xbet_ledger_transaction_duration_ms_bucket[5m])) by (le, transaction_type))",
+          "legendFormat": "{{transaction_type}} P99 (ms)"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1
+}
