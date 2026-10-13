@@ -4,12 +4,10 @@
 
 > **A real-time sports betting, in-play odds ingestion, casino gaming engine, and double-entry ledger platform built with TypeScript, Node.js, PostgreSQL 16, Redis 7, and Kubernetes.**
 
-> ⚠️ **Educational / research project. Points-based only — no real money is ever involved.**
-> This repository is not affiliated with, endorsed by, or associated with bet365 or any other
-> gambling operator, data feed, payment provider, or gaming studio named in this codebase as an
-> illustrative example. It ships with no real payment integrations, no real odds-feed contracts,
-> and no gambling license. Anyone deploying this for real-money wagering is responsible for
-> obtaining their own licensing and provider agreements — this project provides none of that.
+> ⚠️ **Research & Architectural Simulation Notice:**
+> **xBET is an educational, points-only software engineering study** exploring high-throughput event processing, WebSocket push distribution, and double-entry financial ledgering.
+> **Scope & Organizational Boundary:** This project is strictly separate from KOKUTBON's public-benefit mission and core flagship software toolchain. It involves no real currency, payment gateways, wagering licenses, or commercial gambling integrations.
+> This repository is not affiliated with, endorsed by, or associated with any commercial gambling operator, data feed, payment provider, or gaming studio named as an illustrative example. It ships with no real payment integrations, no real odds-feed contracts, and no gambling license.
 
 ## Standalone GitHub Pages demo
 
