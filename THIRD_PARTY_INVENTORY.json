@@ -1,0 +1,470 @@
+{
+  "generated": "2026-10-10",
+  "scope": "Dependency metadata observed from committed npm locks and local validation environments. Not a legal clearance or complete binary/container SBOM. Preserve upstream notices and inspect assets separately.",
+  "dependencies": [
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@prisma/client",
+      "version": "6.19.3",
+      "license": "Apache-2.0",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@prisma/config",
+      "version": "6.19.3",
+      "license": "Apache-2.0",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@prisma/debug",
+      "version": "6.19.3",
+      "license": "Apache-2.0",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@prisma/engines",
+      "version": "6.19.3",
+      "license": "Apache-2.0",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@prisma/engines-version",
+      "version": "7.1.1-3.c2990dca591cba766e3b7ef5d9e8a84796e47ab7",
+      "license": "Apache-2.0",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@prisma/fetch-engine",
+      "version": "6.19.3",
+      "license": "Apache-2.0",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@prisma/get-platform",
+      "version": "6.19.3",
+      "license": "Apache-2.0",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@standard-schema/spec",
+      "version": "1.1.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@types/node",
+      "version": "20.19.43",
+      "license": "MIT",
+      "development": true
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@types/node",
+      "version": "24.19.1",
+      "license": "MIT",
+      "development": true
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@types/pg",
+      "version": "8.23.1",
+      "license": "MIT",
+      "development": true
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "@types/ws",
+      "version": "8.18.2",
+      "license": "MIT",
+      "development": true
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "c12",
+      "version": "3.1.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "chokidar",
+      "version": "4.0.3",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "citty",
+      "version": "0.1.6",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "citty",
+      "version": "0.2.2",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "confbox",
+      "version": "0.2.4",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "confbox",
+      "version": "0.3.1",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "consola",
+      "version": "3.4.2",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "deepmerge-ts",
+      "version": "8.0.2",
+      "license": "BSD-3-Clause",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "defu",
+      "version": "6.1.7",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "destr",
+      "version": "2.0.5",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "dotenv",
+      "version": "16.6.1",
+      "license": "BSD-2-Clause",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "effect",
+      "version": "3.21.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "empathic",
+      "version": "2.0.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "exsolve",
+      "version": "1.1.3",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "fast-check",
+      "version": "3.23.2",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "giget",
+      "version": "2.0.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "jiti",
+      "version": "2.7.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "node-fetch-native",
+      "version": "1.6.7",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "nypm",
+      "version": "0.6.10",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "ohash",
+      "version": "2.0.12",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pathe",
+      "version": "2.0.3",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "perfect-debounce",
+      "version": "1.0.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pg",
+      "version": "8.23.1",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pg-cloudflare",
+      "version": "1.4.1",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pg-connection-string",
+      "version": "2.14.1",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pg-int8",
+      "version": "1.0.1",
+      "license": "ISC",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pg-pool",
+      "version": "3.14.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pg-protocol",
+      "version": "1.16.1",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pg-types",
+      "version": "2.2.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pgpass",
+      "version": "1.0.5",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pkg-types",
+      "version": "2.3.3",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "postgres-array",
+      "version": "2.0.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "postgres-bytea",
+      "version": "1.0.1",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "postgres-date",
+      "version": "1.0.7",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "postgres-interval",
+      "version": "1.2.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "prisma",
+      "version": "6.19.3",
+      "license": "Apache-2.0",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "pure-rand",
+      "version": "6.1.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "rc9",
+      "version": "2.1.2",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "readdirp",
+      "version": "4.1.2",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "split2",
+      "version": "4.2.0",
+      "license": "ISC",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "tinyexec",
+      "version": "1.3.1",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "typescript",
+      "version": "5.9.3",
+      "license": "Apache-2.0",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "undici-types",
+      "version": "6.21.0",
+      "license": "MIT",
+      "development": true
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "undici-types",
+      "version": "7.24.6",
+      "license": "MIT",
+      "development": true
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "ws",
+      "version": "8.22.0",
+      "license": "MIT",
+      "development": false
+    },
+    {
+      "ecosystem": "npm",
+      "manifest": "package-lock.json",
+      "name": "xtend",
+      "version": "4.0.2",
+      "license": "MIT",
+      "development": false
+    }
+  ]
+}

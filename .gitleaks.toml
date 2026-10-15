@@ -1,0 +1,7 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Public deterministic test idempotency key, not a credential"
+paths = ['''services/casino-engine/test/virtual_racing_deterministic\.test\.ts$''']
+regexes = ['''key-vrace-test-unique-001''']

@@ -1,0 +1,15 @@
+apiVersion: v2
+name: xbet-platform
+description: Production Kubernetes Helm Chart for xBET Modern Sportsbook, Casino & Betting Platform
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Platform Engineering Team
+    email: devops@xbet.local
+keywords:
+  - sportsbook
+  - casino
+  - betting-engine
+  - odds-engine
+  - microservices

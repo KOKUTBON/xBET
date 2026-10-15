@@ -1,0 +1,17 @@
+# xBET project catalog. Distributed under Apache-2.0.
+msgid ""
+msgstr ""
+"Language: fas\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Place Bet"
+msgstr "ثبت شرط"
+
+msgid "Balance"
+msgstr "موجودی"
+
+msgid "Cancel"
+msgstr "لغو"
+
+msgid "Settings"
+msgstr "تنظیمات"

@@ -1,0 +1,17 @@
+# xBET project catalog. Distributed under Apache-2.0.
+msgid ""
+msgstr ""
+"Language: deu\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Place Bet"
+msgstr "Wette platzieren"
+
+msgid "Balance"
+msgstr "Guthaben"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Settings"
+msgstr "Einstellungen"

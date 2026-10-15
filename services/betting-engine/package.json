@@ -1,0 +1,22 @@
+{
+  "name": "@xbet/betting-engine",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "High-concurrency double-entry wallet, bet placement, cashout, and settlement engine",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node --check --experimental-strip-types src/index.ts",
+    "start": "node --experimental-strip-types src/index.ts",
+    "dev": "node --experimental-strip-types src/index.ts",
+    "test": "node --experimental-strip-types test/betting_settlement.test.ts && node --experimental-strip-types test/automated_settlement.test.ts && node --experimental-strip-types test/database_integration.test.ts && node --experimental-strip-types test/auth_middleware.test.ts && node --experimental-strip-types test/quote_source.test.ts && node --experimental-strip-types test/placement_atomicity.test.ts && node --experimental-strip-types test/authoritative_settlement_reversal.test.ts && node --experimental-strip-types test/scenario_exposure_risk.test.ts && node --experimental-strip-types test/quantitative_cashout.test.ts && node --experimental-strip-types test/trader_operations_console.test.ts && node --experimental-strip-types test/distributed_locking_and_persistence.test.ts && node --experimental-strip-types test/durable_acceptance.test.ts && node --experimental-strip-types test/bet_builder_integration.test.ts",
+    "test:db": "node --experimental-strip-types test/durable_acceptance.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/pg": "^8.23.1",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "pg": "^8.23.0"
+  }
+}

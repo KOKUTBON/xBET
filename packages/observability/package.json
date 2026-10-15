@@ -1,0 +1,15 @@
+{
+  "name": "@xbet/observability",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Production Observability, OpenTelemetry Distributed Tracing, Prometheus Metrics, and Grafana Dashboards",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node --check --experimental-strip-types src/index.ts",
+    "test": "node --experimental-strip-types test/observability.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}

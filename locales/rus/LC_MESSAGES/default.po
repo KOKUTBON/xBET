@@ -1,0 +1,17 @@
+# xBET project catalog. Distributed under Apache-2.0.
+msgid ""
+msgstr ""
+"Language: rus\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Place Bet"
+msgstr "Сделать ставку"
+
+msgid "Balance"
+msgstr "Баланс"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Settings"
+msgstr "Настройки"

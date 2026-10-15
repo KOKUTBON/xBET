@@ -1,0 +1,17 @@
+# xBET project catalog. Distributed under Apache-2.0.
+msgid ""
+msgstr ""
+"Language: tur\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Place Bet"
+msgstr "Bahis yap"
+
+msgid "Balance"
+msgstr "Bakiye"
+
+msgid "Cancel"
+msgstr "İptal"
+
+msgid "Settings"
+msgstr "Ayarlar"

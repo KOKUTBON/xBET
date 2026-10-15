@@ -1,0 +1,106 @@
+# ==============================================================================
+# ClusterIP Services for Microservices
+# ==============================================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: odds-engine-svc
+  labels:
+    app: odds-engine
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.oddsEngine.port }}
+      targetPort: {{ .Values.oddsEngine.port }}
+      name: http-ws
+  selector:
+    app: odds-engine
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: betting-engine-svc
+  labels:
+    app: betting-engine
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.bettingEngine.port }}
+      targetPort: {{ .Values.bettingEngine.port }}
+      name: http
+  selector:
+    app: betting-engine
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: casino-engine-svc
+  labels:
+    app: casino-engine
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.casinoEngine.port }}
+      targetPort: {{ .Values.casinoEngine.port }}
+      name: http
+  selector:
+    app: casino-engine
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: legacy-bridge-svc
+  labels:
+    app: legacy-bridge
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.legacyBridge.port }}
+      targetPort: {{ .Values.legacyBridge.port }}
+      name: http
+  selector:
+    app: legacy-bridge
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-frontend-svc
+  labels:
+    app: web-frontend
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.webFrontend.port }}
+      targetPort: {{ .Values.webFrontend.port }}
+      name: http
+  selector:
+    app: web-frontend
+---
+# ==============================================================================
+# Unified NGINX Ingress Controller
+# ==============================================================================
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: xbet-platform-ingress
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ .service }}
+                port:
+                  number: {{ .port }}
+          {{- end }}
+    {{- end }}
+{{- end }}

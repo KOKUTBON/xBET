@@ -1,0 +1,86 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": 101,
+  "title": "xBET - Trading Risk & Market Exposure Desk",
+  "tags": ["xbet", "risk", "sportsbook", "trading"],
+  "timezone": "browser",
+  "panels": [
+    {
+      "id": 1,
+      "title": "Active Live Market Liability (USD)",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(xbet_market_liability_usd)",
+          "legendFormat": "Total Liability"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "thresholds": {
+          "mode": "absolute",
+          "steps": [
+            { "color": "green", "value": null },
+            { "color": "orange", "value": 50000 },
+            { "color": "red", "value": 100000 }
+          ]
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "Bets Placed Rate (Ops/Sec)",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 10, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "expr": "rate(xbet_bets_placed_total[1m])",
+          "legendFormat": "{{bet_type}} - {{status}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "High-Stake Tickets (> $2,500)",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
+      "targets": [
+        {
+          "expr": "topk(10, xbet_high_stake_tickets_total)",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Automated Settlement Velocity (Settlements/Sec)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "expr": "rate(xbet_bets_settled_total[1m])",
+          "legendFormat": "Outcome: {{outcome}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Cashout Volume & Margin Realization",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "targets": [
+        {
+          "expr": "rate(xbet_cashout_executed_total[1m])",
+          "legendFormat": "Cashouts/s"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1
+}

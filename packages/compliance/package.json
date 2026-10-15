@@ -1,0 +1,15 @@
+{
+  "name": "@xbet/compliance",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "iGaming Regulatory Compliance, GLI-19 RNG Certification, Responsible Gaming Reality Checks, WAF Anti-DDoS, and Secrets Management",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node --check --experimental-strip-types src/index.ts",
+    "test": "node --experimental-strip-types test/compliance_security.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.4.0"
+  }
+}

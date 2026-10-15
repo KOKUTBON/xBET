@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>xBET — Real-Time Sportsbook, Casino & Virtual Games (Points-Based Demo)</title>
+  <meta name="description" content="Open-source real-time sportsbook, casino, and virtual games platform. Points-based, no real money, built for research and education.">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#07090d">
+  <link rel="icon" type="image/svg+xml" href="./logo.svg">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:ital,wght@0,600;0,700;0,800;1,800&family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="./main.css?v=2">
+  <script>
+    try { var t = localStorage.getItem('xbet-theme'); if (t) document.documentElement.setAttribute('data-theme', t); } catch (e) {}
+  </script>
+</head>
+<body>
+  <!-- Utility bar: responsible play, feed status, display preferences -->
+  <div class="utility" id="sub-menu">
+    <div class="utility-inner">
+      <div class="utility-left">
+        <a href="javascript:void(0)" class="utility-link" onclick="window._openLegalPage('responsible_gambling')">
+          <span class="age-badge">18+</span><span class="hide-sm">Play responsibly</span>
+        </a>
+        <span class="utility-sep hide-sm"></span>
+        <span class="utility-note hide-sm"><svg class="i" aria-hidden="true"><use href="#i-shield-check"></use></svg>Points only · no real money</span>
+        <span class="utility-sep"></span>
+        <span id="feed-status" class="feed-status"></span>
+      </div>
+      <div class="utility-right">
+        <label class="utility-field" title="Odds format">
+          <svg class="i" aria-hidden="true"><use href="#i-hash"></use></svg>
+          <select id="odds-format-select" aria-label="Odds format" onchange="window.appState.setOddsFormat(this.value)">
+            <option value="decimal">Decimal 2.50</option>
+            <option value="fractional">Fractional 6/4</option>
+            <option value="american">American +150</option>
+          </select>
+        </label>
+        <label class="utility-field hide-sm" title="Language">
+          <svg class="i" aria-hidden="true"><use href="#i-globe"></use></svg>
+          <select aria-label="Language" onchange="window.appState.language = this.value; window.appState.showToast('Language: ' + this.value, 'info');">
+            <option value="English">EN · English</option>
+            <option value="Español">ES · Español</option>
+            <option value="Português">PT · Português</option>
+            <option value="Türkçe">TR · Türkçe</option>
+            <option value="Русский">RU · Русский</option>
+            <option value="Deutsch">DE · Deutsch</option>
+          </select>
+        </label>
+        <span class="utility-clock hide-sm"><svg class="i" aria-hidden="true"><use href="#i-clock"></use></svg><span id="date_time"></span></span>
+        <button type="button" class="utility-theme" id="theme-toggle" aria-label="Toggle colour theme" onclick="window.xui.toggleTheme()">
+          <svg class="i i-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+          <svg class="i i-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top bar: brand, primary verticals, wallet -->
+  <header class="topbar">
+    <div class="topbar-row">
+      <button type="button" class="icon-btn drawer-btn" aria-label="Open sports menu" onclick="window.xui.toggleDrawer()">
+        <svg class="i" aria-hidden="true"><use href="#i-menu"></use></svg>
+      </button>
+
+      <a href="javascript:void(0)" class="brand" onclick="window.appState.selectSport(null)" aria-label="xBET home">
+        <span class="brand-mark"><svg class="i" aria-hidden="true"><use href="#i-logo"></use></svg></span>
+        <span class="brand-word"><em>x</em>BET</span>
+      </a>
+
+      <nav id="main-menu" class="primary-nav" aria-label="Primary">
+        <button class="nav-item" id="tab-sports" data-tone="volt" onclick="window.appState.setActiveTab('sports')"><svg class="i" aria-hidden="true"><use href="#i-soccer"></use></svg><span>Sports</span></button>
+        <button class="nav-item" id="tab-inplay" data-tone="live" onclick="window.appState.setActiveTab('inplay')"><svg class="i" aria-hidden="true"><use href="#i-live"></use></svg><span>In-Play</span><b class="nav-count" id="nav-live-count"></b></button>
+        <button class="nav-item" id="tab-casino" data-tone="gold" onclick="window.appState.setActiveTab('casino')"><svg class="i" aria-hidden="true"><use href="#i-casino"></use></svg><span>Casino</span></button>
+        <button class="nav-item" id="tab-livecasino" data-tone="violet" onclick="window.appState.setActiveTab('livecasino')"><svg class="i" aria-hidden="true"><use href="#i-studio"></use></svg><span>Live Casino</span></button>
+        <button class="nav-item" id="tab-virtual" data-tone="cyan" onclick="window.appState.setActiveTab('virtual')"><svg class="i" aria-hidden="true"><use href="#i-virtual"></use></svg><span>Virtuals</span></button>
+        <button class="nav-item" id="tab-bingo" data-tone="gold" onclick="window.appState.launchGame('bingo', 'Classic Bingo 75', 'casino')"><svg class="i" aria-hidden="true"><use href="#i-bingo"></use></svg><span>Bingo</span></button>
+        <button class="nav-item" id="tab-keno" data-tone="gold" onclick="window.appState.launchGame('keno', 'Lucky 80 Keno', 'casino')"><svg class="i" aria-hidden="true"><use href="#i-keno"></use></svg><span>Keno</span></button>
+      </nav>
+
+      <div id="header-user-container" class="header-user"></div>
+    </div>
+
+    <div id="premier-leagues-bar" class="ribbon" data-keep-scroll aria-label="Top competitions"></div>
+  </header>
+
+  <!-- Three-column workspace -->
+  <main id="main" class="layout">
+    <aside class="rail rail-left" id="sports-sidebar-container" data-keep-scroll aria-label="Sports"></aside>
+    <section class="content" id="main-content-view"></section>
+    <aside class="rail rail-right" id="betslip-container" data-keep-scroll aria-label="Bet slip"></aside>
+  </main>
+
+  <footer class="footer app-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="javascript:void(0)" class="brand" onclick="window.appState.selectSport(null)">
+          <span class="brand-mark"><svg class="i" aria-hidden="true"><use href="#i-logo"></use></svg></span>
+          <span class="brand-word"><em>x</em>BET</span>
+        </a>
+        <p>An open-source, points-based sportsbook &amp; casino engine built for research and education. No real money is ever involved.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Play</h4>
+        <a href="javascript:void(0)" onclick="window.appState.setActiveTab('sports')">Sportsbook</a>
+        <a href="javascript:void(0)" onclick="window.appState.setActiveTab('inplay')">In-Play</a>
+        <a href="javascript:void(0)" onclick="window.appState.setActiveTab('casino')">Casino</a>
+        <a href="javascript:void(0)" onclick="window.appState.setActiveTab('virtual')">Virtual Sports</a>
+      </div>
+      <div class="footer-col">
+        <h4>Help</h4>
+        <a href="javascript:void(0)" onclick="window._openLegalPage('support')">Support &amp; Contact</a>
+        <a href="javascript:void(0)" onclick="window._openLegalPage('faq')">FAQ</a>
+        <a href="javascript:void(0)" onclick="window._openLegalPage('rules')">Betting Rules</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="javascript:void(0)" onclick="window._openLegalPage('responsible_gambling')">Responsible Gambling</a>
+        <a href="javascript:void(0)" onclick="window._openLegalPage('terms')">Terms &amp; Conditions</a>
+        <a href="javascript:void(0)" onclick="window._openLegalPage('privacy')">Privacy Policy</a>
+      </div>
+    </div>
+    <div class="footer-trust">
+      <span class="trust"><span class="age-badge">18+</span>Adults only</span>
+      <span class="trust"><svg class="i" aria-hidden="true"><use href="#i-coins"></use></svg>Points-based, no cash value</span>
+      <span class="trust"><svg class="i" aria-hidden="true"><use href="#i-fingerprint"></use></svg>Provably fair · HMAC-SHA256</span>
+      <span class="trust"><svg class="i" aria-hidden="true"><use href="#i-layers"></use></svg>Double-entry ledger</span>
+      <span class="trust"><svg class="i" aria-hidden="true"><use href="#i-code"></use></svg>Open source · Apache-2.0</span>
+    </div>
+    <div class="footer-copy">&copy; xBET — Educational project. Not affiliated with any gambling operator.</div>
+  </footer>
+
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Mobile"></nav>
+  <div class="scrim" onclick="window.xui.closeOverlays()"></div>
+
+  <script src="./app.bundle.js?v=2"></script>
+</body>
+</html>
